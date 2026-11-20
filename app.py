@@ -7,7 +7,6 @@ st.caption("Create by ANUSHA")
 
 mykey = st.secrets["GROQ_API_KEY"]
 
-
 @st.cache_resource
 def initiate_rag():
   return load_base("01_College_Information.pdf")
