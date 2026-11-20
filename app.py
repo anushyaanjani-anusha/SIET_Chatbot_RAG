@@ -37,7 +37,10 @@ if question:
       answer = ask_rag(question, embed_model, chunks, index,api_key = mykey, num_chunks)
       st.write(answer)
 
-st.button("Clear chat"):
+
+if st.button("Clear chat"):
+  st.session_state.chat_hist=[]
+  st.rerun()
 
 
                        
