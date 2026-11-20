@@ -3,37 +3,47 @@ import numpy as np
 from groq import Grog
 from pypdf import PdfReader
 from sentence_transformers import SentenceTransformer
+
+
 def load_pdf (pdf_path):
-  reader = PDFReader(str(pdf_path))
-  mypages = [i.extract_text() or "" for i in reader.pages] 
+  reader = PdfReader(str(pdf_path))
+  mypages = [ i.extract_text() or "" for i in reader.pages] 
   full_text = "\n".join(mypages).strip()
   if not full_text:
     raise ValueError("No readable Text Found")
   return full_text
-def create_chunks(full_txt, chunksize = 500, overlap=100):
+
+
+def create_chunks(full_text, chunksize = 500, overlap=100):
   chunks = []
   start = 0
   while start<len(full_text):
     end = start + chunksize
     chunk = full_text[start:end]
     if chunk.strip():
-      chunks.extend(chunk)
+      chunks.append(chunk)
     start = end - overlap
   return chunks
+
+
 def build_vector(chunks, model_name = "all-MiniLM-L6-v2):
   if not chunks:
     raise ValueError("Cannot apply embedding without chunks")
   embed_model = SentenceTransformer(model_name)
   embed_vectors = embed_model.encode(chunks, convert_to_numpy = True)
-  faiss.normalize_l2(embed_vectors)
+  faiss.normalize_L2(embed_vectors)
   index = faiss.IndexFlatIP(embed_vectors.shape[1])
   index.add(embed_vectors)
   return index, embed_model
+
+
 def load_base (pdf_path= "01_College_Information.pdf")
   full_text = load = load_path(pdf_path)
   chunks = create_chunks(full_text)
   index, embed_model = build_vector(chunks)
-  return index, embed_model, chunks 
+  return index, embed_model, chunks
+
+
 def retrieve_content(question, embed_model, chunks, index,num_chunks=3):
   if not question.strip():
     raise ValueError("Question cannot be blank")
@@ -47,23 +57,26 @@ def retrieve_content(question, embed_model, chunks, index,num_chunks=3):
     if i != -1:
     background += chunks[i] + "\n\n"
   return background
+
+  
   def ask_rag (question, embed_model, chunks, index, api_key, num_chunks, model_name = "openai/gpt-oss-safeguard-120b"):
     key = api_key
     if not key:
       raise ValueError("API key Missing")
     background = retrieve_content(question, embed_model, chunks, index, api_key, num_chunks=3)
-    prompt = ""'You are an Professional AI Assistent.
+    prompt = """You are an Professional AI Assistent.
+    Answer user question using only document background below.
     Do not invert or assume facts.
     If information not available, simply say Information Missing.
-    Document Background :""" + background + "User Question + question + "Answer:"
+    Document Background :""" + background + "User Question" + question + "Answer:"
     client = Groq(api_key = key)
     response = cleint.chat.completions.create(
      model = model_name,
-     messages = [ {"role":"user",
+     messages = [{"role":"user",
                     "content":prompt}],
                      temperature = 0.3,
      )
-  return response.choices[0].message.content
+     return response.choices[0].message.content
      
     
                
