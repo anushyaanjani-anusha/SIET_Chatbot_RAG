@@ -1,10 +1,10 @@
 import streamlit as st
-from rag_engine import load_base,
+from rag_engine import load_base, ask_rag
 st.set_page_config(page_title = "SIET_Chatbot", layout = contered")
 st.title("Shridevi Institute of Engineering and Technology - ChatBot")
 st.caption("Create by ANUSHA")
 
-mykey = st.secrets("GROQ_API_KEY")
+mykey = st.secrets["GROQ_API_KEY"]
 
 
 @st.cache_resource
@@ -28,14 +28,17 @@ question = st.chat_input("Ask anything about SIET college...")
 
 if question:
   st.session.state.chat_hist.append(
-    {"role":"user", content = question})
+    {"role":"user", "content" : question})
   with st.chat_message("user):
     st.write(question)
 
   with st.chat_message("assistent"):
     with st.spinner("Asking RAG for answer..."):
-      answer = ask_rag(question, embed_model, chunks, index,api_key = mykey, num_chunks)
+      answer = ask_rag(question, embed_model, chunks, index, api_key = mykey)
+      
       st.write(answer)
+       st.session.state.chat_hist.append(
+    {"role":"assistent", "content" : answer})
 
 
 if st.button("Clear chat"):
