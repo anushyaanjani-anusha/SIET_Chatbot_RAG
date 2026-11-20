@@ -1,7 +1,7 @@
 import faiss
 import numpy as np
 from groq import Grog
-from pypdf import PDFReader
+from pypdf import PdfReader
 from sentence_transformers import SentenceTransformer
 def load_pdf (pdf_path):
   reader = PDFReader(str(pdf_path))
@@ -32,8 +32,8 @@ def build_vector(chunks, model_name = "all-MiniLM-L6-v2):
 def load_base (pdf_path= "01_College_Information.pdf")
   full_text = load = load_path(pdf_path)
   chunks = create_chunks(full_text)
-  embed_model, index = build_vector(chunks)
-  return embed_model, chunks, index
+  index, embed_model = build_vector(chunks)
+  return index, embed_model, chunks 
 def retrieve_content(question, embed_model, chunks, index,num_chunks=3):
   if not question.strip():
     raise ValueError("Question cannot be blank")
