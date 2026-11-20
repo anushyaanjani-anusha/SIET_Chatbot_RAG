@@ -38,7 +38,7 @@ if question:
       
       st.write(answer)
        st.session.state.chat_hist.append(
-    {"role":"assistent", "content" : answer})
+         {"role":"assistent", "content" : answer})
 
 
 if st.button("Clear chat"):
