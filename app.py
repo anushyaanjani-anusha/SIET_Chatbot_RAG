@@ -28,8 +28,8 @@ question = st.chat_input("Ask anything about SIET college...")
 
 if question:
   st.session.state.chat_hist.append(
-    {"role":"user", "content" : question})
-  with st.chat_message("user):
+    {"role":"user", "content" : "question"})
+  with st.chat_message("user"):
     st.write(question)
 
   with st.chat_message("assistent"):
