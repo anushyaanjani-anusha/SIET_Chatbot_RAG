@@ -11,7 +11,7 @@ def load_pdf (pdf_path):
   full_text = "\n".join(mypages).strip()
   if not full_text:
     raise ValueError("No readable Text Found")
-  return full_text
+    return full_text
 
 
 def create_chunks(full_text, chunksize = 500, overlap=100):
